@@ -1,34 +1,37 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png" />
+  <div>
+    <TaskFirst
+      class="list task4Class"
+      titleList="Test"
+      v-on:change="OnSelectChange"
+    />
 
-    <TaskFirst v-bind:name="name" />
+    <FilledList class="list" v-bind:breeds="selectedBreeds" />
 
-    <TaskSecond v-bind:breeds="breeds" />
-
-    <TaskThird
-      v-bind:breeds="myBreeds"
-      :myBreeds="myBreeds"
-      v-on:add-random="AddRandom"
-      v-on:remove-random="RemoveRandom"
-      v-on:shuffle="Shuffle"
+    <CustomList
+      v-bind:breeds="breeds"
+      :selectedBreeds="selectedBreeds"
+      v-on:change="OnCustomSelectChange"
     />
   </div>
 </template>
 
 <script>
 import TaskFirst from "@/components/TaskFirst";
-import TaskSecond from "@/components/TaskSecond";
-import TaskThird from "@/components/TaskThird";
+import FilledList from "@/components/FilledList";
+import CustomList from "@/components/CustomList";
 
 export default {
   name: "App",
+  components: {
+    TaskFirst,
+    FilledList,
+    CustomList,
+  },
   data() {
     return {
-      name: '',
+      selectedBreeds: [],
       breeds: [],
-      myBreeds: [],
-      allBreedsList: [],
     };
   },
   mounted() {
@@ -36,38 +39,24 @@ export default {
       .then((response) => response.json())
       .then((json) => {
         this.breeds = json.message;
-        this.allBreedsList = Object.entries(json.message);
-        this.myBreeds = Object.entries(json.message).slice(0, 5);
       });
   },
-  components: {
-    TaskFirst,
-    TaskSecond,
-    TaskThird,
-  },
   methods: {
-    AddRandom() {
-      let element =
-        this.allBreedsList[
-          Math.floor(Math.random() * this.allBreedsList.length)
-        ];
-      this.myBreeds.push(element);
+    OnSelectChange(value) {
+      if (value instanceof Event) {
+        return;
+      }
+      this.selectedBreeds = value;
     },
-    RemoveRandom() {
-      this.myBreeds.splice(
-        Math.floor(Math.random() * this.myBreeds.length),
-        1
-      );
-    },
-    Shuffle(array) {
-      for (var i = array.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
+    OnCustomSelectChange(value) {
+      let clickedBreedIndex = this.selectedBreeds?.indexOf(value);
+      if (clickedBreedIndex != null && clickedBreedIndex < 0) {
+        this.selectedBreeds.push(value);
+      } else {
+        this.selectedBreeds.splice(clickedBreedIndex, 1);
       }
     },
-  }
+  },
 };
 </script>
 
@@ -79,5 +68,17 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.list {
+  float: left;
+  padding: 20px;
+}
+
+select {
+  min-width: 200px;
+}
+
+.task4Class {
+  color: green;
 }
 </style>

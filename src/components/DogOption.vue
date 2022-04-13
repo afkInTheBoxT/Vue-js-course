@@ -1,7 +1,7 @@
 <template>
-  <li :class="{ hasSubBreeds: breed[1]?.length > 0 }">
-    {{ breed[0] }}
-  </li>
+  <option>
+    {{ breed }}
+  </option>
 </template>
 
 <script>
@@ -9,7 +9,7 @@ export default {
   props: {
     breed: {
       key: Object,
-    },
+    }
   },
 };
 </script>

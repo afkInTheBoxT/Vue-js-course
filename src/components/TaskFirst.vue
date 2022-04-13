@@ -1,32 +1,53 @@
 <template>
-  <div>
-    <hr />
-    <h2>Task 1 - 2</h2>
-    <div>
-      <p>Напишіть своє ім'я:</p>
-      <NameForm @change-name="changeName" />
-      <p>Привіт, {{ name ?? "Незнайомець" }}.</p>
-    </div>
-    <hr />
+  <div class='list'>
+    <h2>{{ titleList }} </h2>
+    <select
+      v-model="localBreeds"
+      multiple
+      size="30"
+      @change="OnSelectChange"
+    >
+      <DogOption
+        v-for="breed of Object.keys(breeds)"
+        :key="breed.id"
+        v-bind:breed="breed"
+      />
+    </select>
   </div>
 </template>
 
 <script>
-import NameForm from "@/components/NameForm";
+import DogOption from "@/components/DogOption";
 
 export default {
-  data() {
-    return {
-      name: this.name,
-    };
-  },
   components: {
-    NameForm,
+    DogOption,
   },
-  methods: {
-    changeName(newName) {
-      this.name = newName.name;
+  props: {
+    titleList: {
+      default: 'Звичайний заголовок'
     },
   },
+  mounted() {
+    fetch("https://dog.ceo/api/breeds/list/all")
+      .then((response) => response.json())
+      .then((json) => {
+        this.breeds = json.message;
+      });
+  },
+  data() {
+    return {
+      breeds: [],
+      localBreeds: [],
+    };
+  },
+  methods: {
+    OnSelectChange() {
+      this.$emit('change', this.localBreeds);
+    }
+  }
 };
 </script>
+
+<style>
+</style>
